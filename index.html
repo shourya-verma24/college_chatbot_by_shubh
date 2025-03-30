@@ -93,14 +93,23 @@
 
             // Display user message
             chatBox.innerHTML += `<p class="user-message">You: ${user_input}</p>`;
-
             // Fetch bot response
-            fetch("/get?msg=" + user_input)
-            .then(response => response.text())
-            .then(data => {
-                chatBox.innerHTML += `<p class="bot-message">Bot: ${data}</p>`;
-                chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to latest message
-            });
+            fetch(`/get?msg=${encodeURIComponent(user_input)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    chatBox.innerHTML += `<p class="bot-message">Bot: ${data}</p>`;
+                    chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to latest message
+                })
+                .catch(error => {
+                    console.error("Error fetching bot response:", error);
+                    chatBox.innerHTML += `<p class="bot-message error">Bot: Unable to fetch response.</p>`;
+                });
+
 
             // Clear input field
             document.getElementById("user_input").value = "";
