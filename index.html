@@ -81,18 +81,22 @@
         <h2>College Chatbot</h2>
         <div class="chat-box" id="chat-box"></div>
         <div class="input-area">
-            <input type="text" id="user_input" placeholder="Ask something...">
+            <input type="text" id="user_input" placeholder="Ask something..." autofocus>
             <button onclick="sendMessage()">Send</button>
         </div>
     </div>
 
     <script>
         function sendMessage() {
-            let user_input = document.getElementById("user_input").value;
+            let userInputElement = document.getElementById("user_input");
+            let user_input = userInputElement.value.trim();
             let chatBox = document.getElementById("chat-box");
+
+            if (user_input === "") return; // Prevent empty messages
 
             // Display user message
             chatBox.innerHTML += `<p class="user-message">You: ${user_input}</p>`;
+
             // Fetch bot response
             fetch(`/get?msg=${encodeURIComponent(user_input)}`)
                 .then(response => {
@@ -110,9 +114,9 @@
                     chatBox.innerHTML += `<p class="bot-message error">Bot: Unable to fetch response.</p>`;
                 });
 
-
-            // Clear input field
-            document.getElementById("user_input").value = "";
+            // Clear input field and refocus
+            userInputElement.value = "";
+            userInputElement.focus();
         }
     </script>
 
